@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+docker_compose_plugin: true
+docker_user: docker
+docker_uid: 997
+docker_group: docker
+docker_gid: 997

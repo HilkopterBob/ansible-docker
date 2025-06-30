@@ -1,0 +1,103 @@
+#SPDX-License-Identifier: MIT-0
+---
+# Install Docker on Debian/Ubuntu
+- name: Install Docker on Debian/Ubuntu
+  when: ansible_os_family == 'Debian'
+  block:
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+        dest: /usr/share/keyrings/docker-archive-keyring.gpg
+        mode: '0644'
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+      when: docker_compose_plugin
+
+    - name: Install Docker packages without compose
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+        state: present
+        update_cache: yes
+      when: not docker_compose_plugin
+
+# Install Docker on RHEL
+- name: Install Docker on RHEL
+  when: ansible_os_family == 'RedHat'
+  block:
+    - name: Install dnf plugins
+      package:
+        name: dnf-plugins-core
+        state: present
+
+    - name: Add Docker repository
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+
+    - name: Install Docker packages
+      package:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+      when: docker_compose_plugin
+
+    - name: Install Docker packages without compose
+      package:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+        state: present
+      when: not docker_compose_plugin
+
+# Configure user and service
+- name: Create docker group
+  group:
+    name: "{{ docker_group }}"
+    gid: "{{ docker_gid }}"
+    state: present
+
+- name: Create docker user
+  user:
+    name: "{{ docker_user }}"
+    uid: "{{ docker_uid }}"
+    group: "{{ docker_group }}"
+    state: present
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
