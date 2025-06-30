@@ -1,0 +1,21 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: debian
+    image: debian:12
+    command: /sbin/init
+    privileged: true
+    pre_build_image: true
+  - name: ubuntu
+    image: ubuntu:22.04
+    command: /sbin/init
+    privileged: true
+    pre_build_image: true
+  - name: rhel
+    image: quay.io/centos/centos:stream9
+    command: /sbin/init
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
