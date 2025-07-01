@@ -5,3 +5,4 @@ docker_user: docker
 docker_uid: 997
 docker_group: docker
 docker_gid: 997
+docker_manage_service: true
