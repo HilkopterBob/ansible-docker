@@ -17,6 +17,7 @@ docker_user: docker           # user created to run docker
 docker_uid: 997               # uid for docker user
 docker_group: docker          # group for docker
 docker_gid: 997               # gid for docker group
+docker_manage_service: true   # start and enable docker service
 ```
 
 Dependencies
